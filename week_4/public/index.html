@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Auth Test</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    max-width: 400px;
+    margin: 60px auto;
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 20px;
+  }
+
+  h2 {
+    color: #38bdf8;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 6px;
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding: 10px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #e2e8f0;
+    font-size: 14px;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #38bdf8;
+  }
+
+  button {
+    padding: 10px 18px;
+    margin-top: 10px;
+    background: #38bdf8;
+    color: #0f172a;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #0ea5e9;
+  }
+
+  pre {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 12px;
+    white-space: pre-wrap;
+    color: #a7f3d0;
+    font-size: 13px;
+  }
+</style>
+<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<h2>Login</h2>
+<input id="username" placeholder="username" value="jebarsan">
+<input id="password" type="password" placeholder="password" value="Admin@123">
+<button onclick="login()">Login</button>
+
+<h2>Dashboard</h2>
+<button onclick="getDashboard()">Get Dashboard</button>
+
+<h3>Result</h3>
+<pre id="output"></pre>
+
+<script>
+let token = "";
+
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch("/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+  document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+
+  if (data.token) {
+    token = data.token;
+  }
+}
+
+async function getDashboard() {
+  if (!token) {
+    document.getElementById("output").textContent = "Login first to get a token.";
+    return;
+  }
+
+  const res = await fetch("/dashboard", {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const data = await res.json();
+  document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+}
+</script>
+
+</body>
+</html>
